@@ -25,7 +25,7 @@ question-to-answer groupings as ground truth:
 | Baseline (lemma embeddings + weighted keyword overlap) | 0.173 | 0.149 |
 | **Improved (chunked hybrid + RRF + reranking)** | **0.387** | **0.317** |
 
-![Results comparison](diagrams/results_comparison.png)
+![Results comparison](results_comparison.png)
 
 The improved pipeline more than doubles both metrics. Absolute scores are
 conservative: the ground truth only credits answers written for the exact
@@ -70,7 +70,7 @@ embeddings; if its maximum similarity falls below a threshold calibrated from
 in-domain vs. off-topic query distributions, it is rejected as not
 autism-related.
 
-![Relevance gate calibration](diagrams/relevance_gate.png)
+![Relevance gate calibration](relevance_gate.png)
 
 For relevant queries, three rankings — best-chunk embedding similarity,
 query-to-question similarity, and BM25 — are merged with Reciprocal Rank
@@ -82,36 +82,41 @@ Fusion, and the top 20 candidates are reranked by a cross-encoder
 The chunking strategy is motivated by the data itself — a majority of answers
 exceed the embedding model's truncation limit:
 
-![Corpus overview](diagrams/corpus_overview.png)
+![Corpus overview](corpus_overview.png)
 
 What the community talks about most, and the dominant topics:
 
-![Top keyphrases](diagrams/top_keyphrases.png)
+![Top keyphrases](top_keyphrases.png)
 
-![Topics](diagrams/topics.png)
+![Topics](topics.png)
 
 ## Dataset
 
 Autism-related Quora question-answer threads with fields: question, answer,
 upvotes, views, shares, comments, and comment metadata.
 
-The raw dataset is **not committed to this repository** because the answers
-are personal accounts written by Quora users. To run the project, supply your
-own copy as `IRE_Autism.csv`.
+The dataset (`IRE_Autism.csv`) is included in this repository. It contains
+publicly posted Quora answers collected for research purposes; if you are an
+author of any included content and want it removed, please open an issue.
 
 ## Files Included
 
 ```
 autism_qa_retrieval.ipynb
+IRE_Autism.csv
 requirements.txt
-diagrams/
+corpus_overview.png
+relevance_gate.png
+results_comparison.png
+top_keyphrases.png
+topics.png
 README.md
 ```
 
 ## How to Run
 
 * Open the notebook in Google Colab (or click the badge above).
-* Upload `IRE_Autism.csv` to `/content/`.
+* Upload `IRE_Autism.csv` from this repo to `/content/`.
 * Run all cells in order.
 * Generated outputs include the processed knowledge base, embeddings,
   evaluation metrics, and all diagrams.
