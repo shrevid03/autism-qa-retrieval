@@ -1,0 +1,10 @@
+pandas
+numpy
+matplotlib
+scikit-learn
+rake-nltk
+nltk
+spacy
+sentence-transformers
+bertopic
+rank_bm25
