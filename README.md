@@ -15,6 +15,23 @@ meaningful keyphrases, identifies topics, generates semantic embeddings, and
 retrieves the most relevant answers for autism-related user queries — with a
 built-in evaluation harness so retrieval accuracy is measured, not assumed.
 
+## Results
+
+Evaluated on 150 held-out questions using the dataset's own
+question-to-answer groupings as ground truth:
+
+| Pipeline | Recall@3 | MRR |
+|---|---|---|
+| Baseline (lemma embeddings + weighted keyword overlap) | 0.173 | 0.149 |
+| **Improved (chunked hybrid + RRF + reranking)** | **0.387** | **0.317** |
+
+![Results comparison](diagrams/results_comparison.png)
+
+The improved pipeline more than doubles both metrics. Absolute scores are
+conservative: the ground truth only credits answers written for the exact
+query question, so relevant answers to near-duplicate questions in the
+dataset count as misses for both pipelines.
+
 ## Features
 
 * Text preprocessing with noun/adjective filtering and lemmatization
@@ -31,15 +48,6 @@ built-in evaluation harness so retrieval accuracy is measured, not assumed.
 * Evaluation using Recall@3 and MRR against a baseline pipeline
 * Visualization plots for corpus statistics, keyphrases, topics,
   relevance-gate calibration, and accuracy comparison
-
-## Dataset
-
-Autism-related Quora question-answer threads with fields: question, answer,
-upvotes, views, shares, comments, and comment metadata.
-
-The raw dataset is **not committed to this repository** because the answers
-are personal accounts written by Quora users. To run the project, supply your
-own copy as `IRE_Autism.csv`.
 
 ## Methodology
 
@@ -62,30 +70,41 @@ embeddings; if its maximum similarity falls below a threshold calibrated from
 in-domain vs. off-topic query distributions, it is rejected as not
 autism-related.
 
+![Relevance gate calibration](diagrams/relevance_gate.png)
+
 For relevant queries, three rankings — best-chunk embedding similarity,
 query-to-question similarity, and BM25 — are merged with Reciprocal Rank
 Fusion, and the top 20 candidates are reranked by a cross-encoder
 (`ms-marco-MiniLM-L-6-v2`) to produce the final top-k answers.
 
-## Results
+## Corpus Analysis
 
-Evaluated on 150 held-out questions using the dataset's own
-question-to-answer groupings as ground truth:
+The chunking strategy is motivated by the data itself — a majority of answers
+exceed the embedding model's truncation limit:
 
-| Pipeline | Recall@3 | MRR |
-|---|---|---|
-| Baseline (lemma embeddings + weighted keyword overlap) | TODO | TODO |
-| Improved (chunked hybrid + RRF + reranking) | TODO | TODO |
+![Corpus overview](diagrams/corpus_overview.png)
 
-The system retrieves relevant answers for queries related to social anxiety,
-eye contact difficulty, speech delay, sensory overload, autism diagnosis, and
-therapy-related concerns.
+What the community talks about most, and the dominant topics:
+
+![Top keyphrases](diagrams/top_keyphrases.png)
+
+![Topics](diagrams/topics.png)
+
+## Dataset
+
+Autism-related Quora question-answer threads with fields: question, answer,
+upvotes, views, shares, comments, and comment metadata.
+
+The raw dataset is **not committed to this repository** because the answers
+are personal accounts written by Quora users. To run the project, supply your
+own copy as `IRE_Autism.csv`.
 
 ## Files Included
 
 ```
 autism_qa_retrieval.ipynb
 requirements.txt
+diagrams/
 README.md
 ```
 
@@ -95,7 +114,7 @@ README.md
 * Upload `IRE_Autism.csv` to `/content/`.
 * Run all cells in order.
 * Generated outputs include the processed knowledge base, embeddings,
-  evaluation metrics, and all plots.
+  evaluation metrics, and all diagrams.
 
 ## Note
 
